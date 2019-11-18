@@ -1,0 +1,48 @@
+---
+# shots:
+#   - a1
+#   - b1
+#   - c1
+#   - d1
+#   - e1
+#   - d8
+#   - i10
+approval_codes:
+  - 12
+  - 8
+  - 7
+  - 14
+  - 20
+ships:
+  - name: carrier
+    health: 5
+    location:
+      - a1
+      - b1
+      - c1
+      - d1
+      - e1
+  - name: battleship
+    health: 4
+    location:  
+      - d8
+      - d7
+      - d6
+      - d5
+  - name: destroyer
+    health: 3
+    location:
+      - j10
+      - h10
+      - i10
+  - name: submarine
+    health: 3
+    location:
+      - f5
+      - f4
+      - f3
+  - name: patrolboat
+    health: 2
+    location:
+      - h3
+      - i3
