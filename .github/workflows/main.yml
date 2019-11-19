@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Install software requirements for QA
+    - name: Setup Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
@@ -22,3 +22,8 @@ jobs:
         molecule --version
     - name: Molecule lint
       run: molecule lint
+    - name: Molecule syntax
+      run: molecule syntax
+    - name: Molecule converge
+      run: molecule converge
+    - name: Molecule converge
