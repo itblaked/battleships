@@ -8,9 +8,19 @@
   when: new_game|default(False)|bool
 
 - name: Fire at ships
+  vars_prompt:
+    - name: shots
+      prompt: "Enter shots as comma separated values inside square brackets, e.g. [a1,b1]"
+      private: no
+    - name: spysub1_accesscode
+      prompt: "Enter chosen spysub1 access code out of (12, 8, 7, 14, 20)"
+      private: no
+    - name: spysub2_accesscode
+      prompt: "Enter chosen spysub2 access code out of (12, 8, 7, 14, 20)"
+      private: no
   include_tasks: shoot.yml
   loop: "{{ ships }}"
   loop_control:
     loop_var: ship
-    label: "{{ship.name}}"
+    label: "{{ ship.name }}"
   when: shots | list
