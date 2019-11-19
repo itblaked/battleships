@@ -2,12 +2,12 @@
 
 - name: Request approval for spysub1
   set_fact:
-    spysub1_approvalcode: "{{ approval_codes | random}}"
+    spysub1_approvalcode: "{{ approval_codes | random }}"
   no_log: True
 
 - name: Request approval for spysub2
   set_fact:
-    spysub2_approvalcode: "{{ approval_codes | random}}"
+    spysub2_approvalcode: "{{ approval_codes | random }}"
   no_log: True
 
 - name: Preparing weapons...
@@ -23,32 +23,32 @@
     msg: Reports in from scouts that shots have been fired...
   when: shots is defined
 
-- name: WARNING!! Incoming shells on approach to our {{ship.name}}!!
+- name: WARNING!! Incoming shells on approach to our {{ ship.name }}!!
   pause:
     seconds: 2
     prompt: |
 
-      Shot number {{shot_number}} has hit {{ship.name}} at grid {{ shot }}!!
+      Shot number {{ shot_number }} has hit {{ ship.name }}  at grid {{ shot }}!!
   when: shot in ship.location
   changed_when: shot in ship.location
   loop: "{{ shots | from_yaml }}"
   loop_control:
     loop_var: shot
-    label: "Shot number {{shot_number}}"
+    label: "Shot number {{ shot_number }}"
     index_var: shot_number
 
-- name: Excellent. These shells completely missed our {{ship.name}}
+- name: Excellent. These shells completely missed our {{ ship.name }}
   debug:
-    msg: "Shot number {{shot_number}} has missed!!"
+    msg: "Shot number {{ shot_number }} has missed!!"
   when: shot not in ship.location
   changed_when: shot not in ship.location
   loop: "{{ shots | from_yaml }}"
   loop_control:
     loop_var: shot
-    label: "Shot number {{shot_number}}"
+    label: "Shot number {{ shot_number }}"
     index_var: shot_number
 
-- name: Radio team, organise a damage report for {{ship.name}}...
+- name: Radio team, organise a damage report for {{ ship.name }}...
   set_fact:
     ship_damage: "{{ ship_damage | default(0) | int + 1 }}"
   when: shot in ship.location
@@ -145,43 +145,43 @@
 
 - name: Damage reports are in!
   debug:
-    msg: "Commander, {{ship.name | title}} is still functional. Crew report indicates {{ship_damage}}/{{ship.health}} health lost"
-  when: 
+    msg: "Commander, {{ ship.name |  title }} is still functional. Crew report indicates {{ ship_damage }}/{{ ship.health }} health lost"
+  when:
     - ship_damage|int != ship.health|int
 
-    
+
 - name: URGENT SITREP REQUIRED!
   when: ship_sunk | bool
   block:
 
-      
 
-    - name: Missing SITREP! Request recon of {{ship.name|title}}!
+
+    - name: Missing SITREP! Request recon of {{ ship.name|title }}!
       pause:
         seconds: 2
         prompt: |
-        
-          Commander, this is Charlie-One-Zulu, request for air recon of {{ship.name|title}} received, standby...
+
+          Commander, this is Charlie-One-Zulu, request for air recon of {{ ship.name|title }} received, standby...
 
     - name: Recon in progress
       pause:
           seconds: 3
           prompt: |
-            
-            Recon of {{ship.name|title}} in progress,
+
+            Recon of {{ ship.name|title }} in progress,
             Standby.....
 
-    - name: Recon of {{ship.name|title}} complete...
+    - name: Recon of {{ ship.name|title }} complete...
       pause:
         seconds: 5
         prompt: |
 
-          Commander, we are at the last known location of the {{ship.name|title}}...
-          grid {{ship.location}}, there is no sign of it.
+          Commander, we are at the last known location of the {{ ship.name|title }}...
+          grid {{ ship.location }}, there is no sign of it.
 
-    - name: SITREP | {{ship.name}} has been sunk...
+    - name: SITREP | {{ ship.name }}  has been sunk...
       fail:
-        msg: "Bumbow... {{ship.name}} is sleeping with the fishes... :`("
+        msg: "Bumbow... {{ ship.name }}  is sleeping with the fishes... :`("
       when: ship_sunk | bool
 
   rescue:
@@ -207,5 +207,3 @@
         msg: Spysub1 and spysub2 approval denied.
       when: spysub1 is skipped and spysub2 is skipped
       ignore_errors: True
-      
-
