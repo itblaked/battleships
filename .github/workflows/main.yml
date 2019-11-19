@@ -1,0 +1,28 @@
+name: Molecule QA
+
+on: [push]
+
+jobs:
+  molecule:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        pip --version
+        pip install molecule
+        molecule --version
+    - name: Molecule lint
+      run: molecule lint
+    - name: Molecule syntax
+      run: molecule syntax
+    - name: Molecule converge
+      run: molecule converge
