@@ -26,4 +26,3 @@ jobs:
       run: molecule syntax
     - name: Molecule converge
       run: molecule converge
-    - name: Molecule converge

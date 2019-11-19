@@ -1,7 +1,10 @@
 Battleships
 =========
 
+
 ## Overview
+
+![](https://github.com/itblaked/battleships/workflows/CI/badge.svg)
 
 This Ansible role simulates the classic game 'Battleships'.
 
