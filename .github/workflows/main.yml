@@ -3,7 +3,7 @@ name: Molecule QA
 on: [push]
 
 jobs:
-  build:
+  molecule:
 
     runs-on: ubuntu-latest
 
