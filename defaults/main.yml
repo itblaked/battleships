@@ -5,6 +5,7 @@
 
 # spysub1_accesscode: 12
 # spysub2_accesscode: 20
+
 ships:
   - name: carrier
     health: 5
