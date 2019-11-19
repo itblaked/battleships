@@ -7,26 +7,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    container:
-      image: quay.io/ansible/molecule
-      volumes: $(PWD):/tmp/$(basename) ${PWD}:ro
-      options: -w /tmp/$(basename "${PWD}")
-      
     steps:
-      - name: test container
-        run: molecule lint
-    # - uses: actions/checkout@v1
-    # - name: Install software requirements for QA
-    #   uses: docker://quay.io/ansible/molecule
-    #   run: |
-    #     python --version
-    #     pip --version
-    #     python -m pip install virtualenv
-    #     python -m virtualenv --version
-    #     python -m virtualenv ansible_venv
-    #     source ansible_venv/bin/activate
-    #     pip install molecule
-    #     molecule --version
-    # - name: Molecule lint
-    #   run: |
-    #     docker run --rm -it -v "$(pwd)":/tmp/$(basename "${PWD}"):ro -v /var/run/docker.sock:/var/run/docker.sock -w /tmp/$(basename "${PWD}") quay.io/ansible/molecule:2.20 molecule test
+    - uses: actions/checkout@v1
+    - name: Install software requirements for QA
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        pip --version
+        pip install molecule
+        molecule --version
+    - name: Molecule lint
+      run: molecule lint
