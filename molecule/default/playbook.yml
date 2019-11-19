@@ -1,0 +1,48 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    shots:
+      - a1
+      - b1
+      - c1
+      - d1
+      - e1
+    spysub1_accesscode: 12
+    spysub2_accesscode: 20
+    ships:
+      - name: carrier
+        health: 5
+        location:
+          - a1
+          - b1
+          - c1
+          - d1
+          - e1
+      - name: battleship
+        health: 4
+        location:
+          - d8
+          - d7
+          - d6
+          - d5
+      - name: destroyer
+        health: 3
+        location:
+          - j10
+          - h10
+          - i10
+      - name: submarine
+        health: 3
+        location:
+          - f5
+          - f4
+          - f3
+      - name: patrolboat
+        health: 2
+        location:
+          - h3
+          - i3
+
+  roles:
+    - role: battleships
