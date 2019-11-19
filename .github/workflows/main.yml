@@ -1,4 +1,4 @@
-name: CI
+name: Molecule QA
 
 on: [push]
 
