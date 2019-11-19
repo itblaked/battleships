@@ -1,0 +1,18 @@
+---
+- name: Check that shots variable is defined
+  fail:
+    msg: "Shots variable must be defined"
+  when: shots is not defined
+
+- name: Check that ships variables are defined
+  fail:
+    msg: "Ships must have a name, location and health defined"
+  when: ship.name is not defined or ship.location is not defined or ship.health is not defined
+  loop: "{{ ships }}"
+  loop_control:
+    loop_var: ship
+
+- name: Check that spysub variables are defined
+  fail:
+    msg: "spysub1_accesscode and spysub2_accesscoe must be defined"
+  when: spysub1_accesscode is not defined or spysub2_accesscode is not defined
