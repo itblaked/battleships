@@ -1,23 +1,16 @@
 ---
 # tasks file for battleships
 
-- name: Time for a new game
-  template:
-    dest: battleship_game_stats.yml
-    src: files/new_game.j2
-  when: new_game|default(False)|bool
+# - name: Time for a new game
+#   template:
+#     dest: battleship_game_stats.yml
+#     src: files/new_game.j2
+#   when: new_game|default(False)|bool
+
+- name: Check requirements to play are met
+  include_tasks: requirements.yml
 
 - name: Fire at ships
-  vars_prompt:
-    - name: shots
-      prompt: "Enter shots as comma separated values inside square brackets, e.g. [a1,b1]"
-      private: no
-    - name: spysub1_accesscode
-      prompt: "Enter chosen spysub1 access code out of (12, 8, 7, 14, 20)"
-      private: no
-    - name: spysub2_accesscode
-      prompt: "Enter chosen spysub2 access code out of (12, 8, 7, 14, 20)"
-      private: no
   include_tasks: shoot.yml
   loop: "{{ ships }}"
   loop_control:
