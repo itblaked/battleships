@@ -14,8 +14,8 @@ jobs:
         python --version
         pip --version
         python -m pip install virtualenv
-        virtualenv --version
-        virtualenv ansible_venv
+        python -m virtualenv --version
+        python -m virtualenv ansible_venv
         source ansible_venv/bin/activate
         pip install molecule
         molecule --version
