@@ -8,6 +8,8 @@ Battleships
 
 This Ansible role simulates the classic game 'Battleships'.
 
+It is available in Ansible Galaxy https://galaxy.ansible.com/itblaked/battleships
+
 https://en.wikipedia.org/wiki/Battleship_(game).
 
 Shots are provided as a list of grid points stored in the variable `shots`.
