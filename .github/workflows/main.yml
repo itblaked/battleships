@@ -11,9 +11,10 @@ jobs:
       image: quay.io/ansible/molecule
       volumes: $(PWD):/tmp/$(basename) ${PWD}:ro
       options: -w /tmp/$(basename "${PWD}")
-      entrypoint: molecule lint
       
-    # steps:
+    steps:
+      - name: test container
+        run: molecule lint
     # - uses: actions/checkout@v1
     # - name: Install software requirements for QA
     #   uses: docker://quay.io/ansible/molecule
