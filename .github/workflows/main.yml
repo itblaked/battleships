@@ -14,6 +14,11 @@ jobs:
         python --version
         pip --version
         python -m pip install virtualenv
+        virtualenv --version
+        virtualenv ansible_venv
+        source ansible_venv/bin/activate
+        pip install molecule
+        molecule --version
     - name: Run a multi-line script
       run: |
         echo Add other actions to build,
