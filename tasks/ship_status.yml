@@ -1,0 +1,139 @@
+---
+
+- name: Carrier status report
+  block:
+    - name: Requesting damage report from Carrier...
+      set_fact:
+        cacheable: true
+        battleships:
+          game_data:
+            carrier:
+              damage: "{{ ansible_facts.battleships.game_data.carrier.damage | int + 1 }}"
+      when: 
+        - shot in ship.location
+        - "'carrier' == ship.name"
+        - shot not in ansible_facts.battleships.game_data.shots.fired
+      changed_when: shot in ship.location
+      loop: "{{ shots | from_yaml }}"
+      loop_control:
+        loop_var: shot
+        label: "Shot"
+      # no_log: True
+    - name: No response from Carrier...
+      set_fact:
+        cacheable: true
+        battleships:
+          game_data:
+            carrier:
+              sunk: true
+      when: 
+        - ansible_facts.battleships.game_data.carrier.damage|int == ansible_facts.battleships.game_data.carrier.health|int
+      # no_log: True
+  when: 
+    - "'carrier' == ship.name"
+
+# - name: Battleship status report
+#   block:
+#     - name: Requesting damage report from Battleship...
+#       set_fact:
+#         cacheable: true
+#         game_data:
+#           battleship:
+#             damage: "{{ ansible_facts.battleships.game_data.battleship.damage | int + 1 }}"
+#       when: 
+#         - shot in ship.location
+#         - "'battleship' == ship.name"
+#         - shot not in ansible_facts.battleships.game_data.shots.fired
+#       changed_when: shot in ship.location
+#       loop: "{{ shots | from_yaml }}"
+#       loop_control:
+#         loop_var: shot
+#         label: "Shot number {{ shot_number }}"
+#       no_log: True
+#     - name: No response from battleship...
+#       set_fact:
+#         cacheable: true
+#         game_data:
+#           battleship:
+#             sunk: true
+#       when: 
+#         - ship_damage|int == ship.health|int
+#       no_log: True
+#   when: 
+#     - "'battleship' == ship.name"
+
+
+
+# - name: Requesting damage report from Battleship...
+#   set_fact:
+#     battleship_damage: "{{ ship_damage }}"
+#   when: 
+#     - damage_report is changed
+#     - "'battleship' == ship.name"
+#   no_log: True
+# - name: Requesting damage report from Destroyer...
+#   set_fact:
+#     destroyer_damage: "{{ ship_damage }}"
+#   when: 
+#     - damage_report is changed
+#     - "'destroyer' == ship.name"
+#   no_log: True
+# - name: Requesting damage report from Submarine...
+#   set_fact:
+#     submarine_damage: "{{ ship_damage }}"
+#   when: 
+#     - damage_report is changed
+#     - "'submarine' == ship.name"
+#   no_log: True
+# - name: Requesting damage report from Patrolboat...
+#   set_fact:
+#     patrolboat_damage: "{{ ship_damage }}"
+#   when: 
+#     - damage_report is changed
+#     - "'patrolboat' == ship.name"
+#   no_log: True
+# - name: No response.. Retrying request for damage report from Battleship...
+#   set_fact:
+#     battleship_sunk: "{{ ship_sunk }}"
+#   when: 
+#     - ship_sunk|bool
+#     - "'battleship' == ship.name"
+#   no_log: True
+# - name: No response.. Retrying request for damage report from Destroyer...
+#   set_fact:
+#     destroyer_sunk: "{{ ship_sunk }}"
+#   when: 
+#     - ship_sunk|bool
+#     - "'destroyer' == ship.name"
+#   no_log: True
+# - name: No response.. Retrying request for damage report from Submarine...
+#   set_fact:
+#     submarine_sunk: "{{ ship_sunk }}"
+#   when: 
+#     - ship_sunk|bool
+#     - "'submarine' == ship.name"
+#   no_log: True
+# - name: No response.. Retrying request for damage report from Patrolboat...
+#   set_fact:
+#     patrolboat_sunk: "{{ ship_sunk }}"
+#   when: 
+#     - ship_sunk|bool
+#     - "'patrolboat' == ship.name"
+#   no_log: True
+
+# - name: Filing damage report
+#   template:
+#     dest: battleship_game_stats.yml
+#     src: ../files/sitrep.j2
+
+- name: "{{ ship.name }}, status report?"
+  set_fact:
+    game_data:
+      shots:
+        fired: "{{ ansible_facts.battleships.game_data.shots.fired + shot }}"
+  when: shot not in ansible_facts.battleships.game_data.shots.fired
+  changed_when: shot not in ansible_facts.battleships.game_data.shots.fired
+  loop: "{{ shots | from_yaml }}"
+  loop_control:
+    loop_var: shot
+  no_log: True
