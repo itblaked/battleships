@@ -1,14 +1,14 @@
 ---
 # tasks file for battleships
+#vars:
+#  banner_asciiart: "{{ lookup('file', './banner.txt').split('\n') }}"
 
-# - name: Time for a new game
-#   template:
-#     dest: battleship_game_stats.yml
-#     src: files/new_game.j2
-#   when: new_game|default(False)|bool
 
-- name: Check requirements to play are met
-  include_tasks: requirements.yml
+- name: Time for a new game
+  debug:
+    msg: "{{ lookup('file', './banner.txt').split('\n') }}"
+
+  when: new_game|default(False)|bool
 
 - name: Fire at ships
   include_tasks: shoot.yml
@@ -17,3 +17,4 @@
     loop_var: ship
     label: "{{ ship.name }}"
   when: shots | list
+ 

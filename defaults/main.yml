@@ -1,11 +1,18 @@
 ---
-# shots:
-#   - a1
-#   - b8
-
-# spysub1_accesscode: 12
-# spysub2_accesscode: 20
-
+shots:
+  - a1
+#   - b1
+#   - c1
+#   - d1
+#   - e1
+#   - d8
+#   - i10
+approval_codes:
+  - 12
+  - 8
+  - 7
+  - 14
+  - 20
 ships:
   - name: carrier
     health: 5
