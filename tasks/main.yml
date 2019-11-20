@@ -10,10 +10,55 @@
 - name: Check requirements to play are met
   include_tasks: requirements.yml
 
+- name: Ship anchor
+  set_fact:
+    cacheable: true
+    battleships:
+      game_data:
+        shots:
+          fired: []
+        carrier:
+          health: 5
+          damage: 0
+          sunk: false
+        battleship:
+          health: 4
+          damage: 0
+          sunk: false
+        destroyer:
+          health: 3
+          damage: 0
+          sunk: false
+        submarine:
+          health: 3
+          damage: 0
+          sunk: false
+        patrolboat:
+          health: 2
+          damage: 0
+          sunk: false
+        spysub1:
+          enabled: false
+        spysub2:
+          enabled: false
+  # no_log: true
+  when: ansible_facts.battleship.game_data is not defined
+
 - name: Fire at ships
-  include_tasks: shoot.yml
+  include_tasks: ship_status.yml
   loop: "{{ ships }}"
   loop_control:
     loop_var: ship
     label: "{{ ship.name }}"
   when: shots | list
+
+- name: Game Over!
+  fail:
+    msg: All your ships are sunk and you don't have a valid spysub access code!
+  when:
+    - ansible_facts.battleships.game_data.carrier.sunk | bool
+    - ansible_facts.battleships.game_data.battleship.sunk | bool
+    - ansible_facts.battleships.game_data.destroyer.sunk | bool
+    - ansible_facts.battleships.game_data.submarine.sunk | bool
+    - ansible_facts.battleships.game_data.patrolboat.sunk | bool
+    # spysub1 and spysub2 not enabled

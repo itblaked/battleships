@@ -1,16 +1,16 @@
 ---
 
-- name: Request approval for spysub1
+- name: Transmitting Spysub1 access code to HQ for validation...
   set_fact:
     spysub1_approvalcode: "{{ approval_codes | random }}"
   no_log: True
 
-- name: Request approval for spysub2
+- name: Transmitting Spysub2 access code to HQ for validation...
   set_fact:
     spysub2_approvalcode: "{{ approval_codes | random }}"
   no_log: True
 
-- name: Preparing weapons...
+- name: Battle Stations!
   set_fact:
     ship_damage: 0
 
@@ -18,9 +18,9 @@
   set_fact:
     ship_sunk: False
 
-- name: Shots fired.
+- name: Shots detected on radar
   debug:
-    msg: Reports in from scouts that shots have been fired...
+    msg: Radar has detected rounds are in the air
   when: shots is defined
 
 - name: WARNING!! Incoming shells on approach to our {{ ship.name }}!!
@@ -48,100 +48,6 @@
     label: "Shot number {{ shot_number }}"
     index_var: shot_number
 
-- name: Radio team, organise a damage report for {{ ship.name }}...
-  set_fact:
-    ship_damage: "{{ ship_damage | default(0) | int + 1 }}"
-  when: shot in ship.location
-  changed_when: shot in ship.location
-  loop: "{{ shots | from_yaml }}"
-  loop_control:
-    loop_var: shot
-  register: damage_report
-  no_log: True
-
-# - name: Requesting damage report from Carrier...
-#   set_fact:
-#     carrier_damage: "{{ ship_damage }}"
-#   when: 
-#     - damage_report is changed
-#     - "'carrier' == ship.name"
-#   no_log: True
-# - name: Requesting damage report from Battleship...
-#   set_fact:
-#     battleship_damage: "{{ ship_damage }}"
-#   when: 
-#     - damage_report is changed
-#     - "'battleship' == ship.name"
-#   no_log: True
-# - name: Requesting damage report from Destroyer...
-#   set_fact:
-#     destroyer_damage: "{{ ship_damage }}"
-#   when: 
-#     - damage_report is changed
-#     - "'destroyer' == ship.name"
-#   no_log: True
-# - name: Requesting damage report from Submarine...
-#   set_fact:
-#     submarine_damage: "{{ ship_damage }}"
-#   when: 
-#     - damage_report is changed
-#     - "'submarine' == ship.name"
-#   no_log: True
-# - name: Requesting damage report from Patrolboat...
-#   set_fact:
-#     patrolboat_damage: "{{ ship_damage }}"
-#   when: 
-#     - damage_report is changed
-#     - "'patrolboat' == ship.name"
-#   no_log: True
-
-- name: No response from {{ ship.name }}...
-  set_fact:
-    ship_sunk: True
-  when: ship_damage|int == ship.health|int
-  changed_when: ship_damage|int == ship.health|int
-  no_log: True
-# - name: No response.. Retrying request for damage report from Carrier...
-#   set_fact:
-#     carrier_sunk: "{{ ship_sunk }}"
-#   when: 
-#     - ship_sunk|bool
-#     - "'carrier' == ship.name"
-#   no_log: True
-# - name: No response.. Retrying request for damage report from Battleship...
-#   set_fact:
-#     battleship_sunk: "{{ ship_sunk }}"
-#   when: 
-#     - ship_sunk|bool
-#     - "'battleship' == ship.name"
-#   no_log: True
-# - name: No response.. Retrying request for damage report from Destroyer...
-#   set_fact:
-#     destroyer_sunk: "{{ ship_sunk }}"
-#   when: 
-#     - ship_sunk|bool
-#     - "'destroyer' == ship.name"
-#   no_log: True
-# - name: No response.. Retrying request for damage report from Submarine...
-#   set_fact:
-#     submarine_sunk: "{{ ship_sunk }}"
-#   when: 
-#     - ship_sunk|bool
-#     - "'submarine' == ship.name"
-#   no_log: True
-# - name: No response.. Retrying request for damage report from Patrolboat...
-#   set_fact:
-#     patrolboat_sunk: "{{ ship_sunk }}"
-#   when: 
-#     - ship_sunk|bool
-#     - "'patrolboat' == ship.name"
-#   no_log: True
-
-# - name: Filing damage report
-#   template:
-#     dest: battleship_game_stats.yml
-#     src: ../files/sitrep.j2
-
 
 - name: Damage reports are in!
   debug:
@@ -149,12 +55,9 @@
   when:
     - ship_damage|int != ship.health|int
 
-
 - name: URGENT SITREP REQUIRED!
   when: ship_sunk | bool
   block:
-
-
 
     - name: Missing SITREP! Request recon of {{ ship.name|title }}!
       pause:
@@ -185,25 +88,45 @@
       when: ship_sunk | bool
 
   rescue:
-    - name: Spysub1 approval code response received...
+
+    - name: Spysub1 access code validation received... Decoding
+      set_fact:
+        game_data:
+          spysub1:
+            enabled: true
+      when: spysub1_approvalcode == spysub1_accesscode
+
+    - name: Spysub1 access code decoded
       debug:
         msg: Spysub1 approved. 1 bonus shot available for next turn only.
-      when: spysub1_approvalcode == spysub1_accesscode
-      register: spysub1
-    - name: Spysub2 approval code response received...
+      when: game_data.spysub1.enabled | bool
+
+    - name: Spysub2 access code validation received... Decoding
+      set_fact:
+        game_data:
+          spysub2:
+            enabled: true
+      when: spysub2_approvalcode == spysub2_accesscode
+
+    - name: Spysub2 access code decoded
       debug:
         msg: Spysub2 approved. 2 bonus shots available for next turn only.
-      when: spysub2_approvalcode == spysub2_accesscode
-      register: spysub2
+      when: game_data.spysub2.enabled | bool
+
     - name: WARNING!!
       pause:
         seconds: 10
         prompt: |
 
           "NOTE: You have 10 seconds to communicate this bonus to the other player."
-      when: spysub1 is not skipped or spysub2 is not skipped
+      when: 
+        - game_data.spysub1.enabled | bool
+        - game_data.spysub2.enabled | bool
+
     - name: No bonus for you.
       fail:
         msg: Spysub1 and spysub2 approval denied.
-      when: spysub1 is skipped and spysub2 is skipped
+      when: 
+        - not game_data.spysub1.enabled | bool
+        - not game_data.spysub2.enabled | bool
       ignore_errors: True
