@@ -1,10 +1,15 @@
 ---
-# shots:
-#   - a1
-#   - b8
-
+shots:
+  - a1
+#   - b1
+#   - c1
+#   - d1
+#   - e1
+#   - d8
+#   - i10
 # spysub1_accesscode: 12
 # spysub2_accesscode: 20
+
 
 ships:
   - name: carrier
