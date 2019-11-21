@@ -3,11 +3,12 @@
 #vars:
 #  banner_asciiart: "{{ lookup('file', './banner.txt').split('\n') }}"
 
+- name: Check requirements to play are met
+  include_tasks: requirements.yml
 
 - name: Time for a new game
   debug:
     msg: "{{ lookup('file', './banner.txt').split('\n') }}"
-
   when: new_game|default(False)|bool
 
 - name: Fire at ships
@@ -17,4 +18,3 @@
     loop_var: ship
     label: "{{ ship.name }}"
   when: shots | list
- 
