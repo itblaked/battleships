@@ -7,12 +7,7 @@ shots:
 #   - e1
 #   - d8
 #   - i10
-approval_codes:
-  - 12
-  - 8
-  - 7
-  - 14
-  - 20
+
 ships:
   - name: carrier
     health: 5
