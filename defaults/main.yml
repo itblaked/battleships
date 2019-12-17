@@ -1,41 +1,38 @@
 ---
 # shots:
 #   - a1
-#   - b8
+#   - j7
 
 # spysub1_accesscode: 12
 # spysub2_accesscode: 20
 
+battleships_new_game: False
+
 ships:
   - name: carrier
-    health: 5
-    location:
-      - a1
-      - b1
-      - c1
-      - d1
-      - e1
-  - name: battleship
-    health: 4
-    location:  
-      - d8
-      - d7
-      - d6
-      - d5
-  - name: destroyer
-    health: 3
     location:
       - j10
-      - h10
-      - i10
-  - name: submarine
-    health: 3
-    location:
-      - f5
-      - f4
+      - j9
+      - j8
+      - j7
+      - j6
+  - name: battleship
+    location:  
+      - f1
+      - f2
       - f3
-  - name: patrolboat
-    health: 2
+      - f4
+  - name: destroyer
     location:
-      - h3
+      - a2
+      - b2
+      - c2
+  - name: submarine
+    location:
+      - g6
+      - h6
+      - i6
+  - name: patrolboat
+    location:
+      - i2
       - i3

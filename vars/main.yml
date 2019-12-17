@@ -6,3 +6,7 @@ approval_codes:
   - 7
   - 14
   - 20
+battleships_data_file: /tmp/ansible_battleships_game_data.yml
+damage_default: 0
+shots_fired_default: []
+sunk_default: false

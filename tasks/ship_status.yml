@@ -1,36 +1,149 @@
 ---
 
-- name: Carrier status report
-  block:
-    - name: Requesting damage report from Carrier...
-      set_fact:
-        cacheable: true
-        battleships:
-          game_data:
-            carrier:
-              damage: "{{ ansible_facts.battleships.game_data.carrier.damage | int + 1 }}"
-      when: 
-        - shot in ship.location
-        - "'carrier' == ship.name"
-        - shot not in ansible_facts.battleships.game_data.shots.fired
-      changed_when: shot in ship.location
-      loop: "{{ shots | from_yaml }}"
-      loop_control:
-        loop_var: shot
-        label: "Shot"
-      # no_log: True
-    - name: No response from Carrier...
-      set_fact:
-        cacheable: true
-        battleships:
-          game_data:
-            carrier:
-              sunk: true
-      when: 
-        - ansible_facts.battleships.game_data.carrier.damage|int == ansible_facts.battleships.game_data.carrier.health|int
-      # no_log: True
+- name: Include game data
+  include_vars: "{{ battleships_data_file }}"
+  when: battleships_game_data.stat.exists | bool
+
+- debug:
+    msg: "{{ship.name}} damage is: {{ battleships.data_file | json_query(ship.name + '.damage') }}"
+  
+- name: "Retrieve previous damage reports for {{ ship.name }}"
+  set_fact:
+    ship_damage: "{{ battleships.data_file | json_query(ship.name + '.damage') }}"
+    ship_sunk: "{{ battleships.data_file | json_query(ship.name + '.sunk') }}"
+  loop: "{{ shots }}"
+  loop_control:
+    loop_var: shot
+  when:
+    - "new_game_setup == 'completed'"
+    - ship_damage is not defined
+    - ship_sunk is not defined
+    # - shot in ship.location
+    # - shot not in battleships.data_file.shots.fired
+
+- name: "Updating damage reports for {{ ship.name }} from latest shots"
+  set_fact:
+    ship_damage: "{{ ship_damage | int + 1 }}"
+  loop: "{{ shots }}"
+  loop_control:
+    loop_var: shot
+  changed_when:
+    - shot in ship.location
+    - shot not in battleships.data_file.shots.fired
+  when:
+    - "new_game_setup == 'completed'"
+    - shot in ship.location
+    - shot not in battleships.data_file.shots.fired
+  # no_log: True
+
+
+# - name: "Pause if damage received for {{ ship.name }}"
+#   pause:
+#     seconds: 5
+#   loop: "{{ shots }}"
+#   loop_control:
+#     loop_var: shot
+#   changed_when:
+#     - shot in ship.location
+#     - shot not in battleships.data_file.shots.fired
+#   when:
+#     - shot in ship.location
+#     - shot not in battleships.data_file.shots.fired
+  # no_log: True
+
+- name: "No response from {{ ship.name }}..."
+  set_fact:
+    ship_sunk: true
   when: 
-    - "'carrier' == ship.name"
+    - "new_game_setup == 'completed'"
+    - ship_damage is defined
+    - ship_damage|int == battleships.data_file.carrier.health|int
+    
+
+# - name: "Pause if {{ ship.name }} sunk"
+#   pause:
+#     seconds: 5
+#   changed_when:
+#     - ship_sunk is defined
+#     - ship_sunk | bool
+#   when: 
+#     - ship_sunk is defined
+#     - ship_sunk | bool
+
+- name: "Retrieving previous reports shots fired"
+  set_fact:
+    shots_fired: "{{ battleships.data_file.shots.fired }}"
+  loop: "{{ shots }}"
+  loop_control:
+    loop_var: shot
+  when: 
+    - "new_game_setup == 'completed'"
+    - shots_fired is not defined
+    # - shot not in battleships.data_file.shots.fired
+  # no_log: True
+
+- name: "Updating reports of shots fired"
+  set_fact:
+    shots_fired: "{{ shots_fired + [shot] }}"
+  changed_when:
+    - shots_fired is defined
+    - shot not in shots_fired
+  when: 
+    - "new_game_setup == 'completed'"
+    - shots_fired is defined
+    - shot not in shots_fired
+  loop: "{{ shots }}"
+  loop_control:
+    loop_var: shot
+  # no_log: True
+
+- name: Update data for carrier
+  set_fact:
+    carrier_damage: "{{ ship_damage }}"
+    carrier_sunk: "{{ ship_sunk }}"
+  when: "ship.name == 'carrier'"
+
+- name: Update data for battleship
+  set_fact:
+    battleship_damage: "{{ ship_damage }}"
+    battleship_sunk: "{{ ship_sunk }}"
+  when: "ship.name == 'battleship'"
+
+- name: Update data for destroyer
+  set_fact:
+    destroyer_damage: "{{ ship_damage }}"
+    destroyer_sunk: "{{ ship_sunk }}"
+  when: "ship.name == 'destroyer'"
+
+- name: Update data for submarine
+  set_fact:
+    submarine_damage: "{{ ship_damage }}"
+    submarine_sunk: "{{ ship_sunk }}"
+  when: "ship.name == 'submarine'"
+
+- name: Update data for patrolboat
+  set_fact:
+    patrolboat_damage: "{{ ship_damage }}"
+    patrolboat_sunk: "{{ ship_sunk }}"
+  when: "ship.name == 'patrolboat'"
+
+
+- name: Update Game Data
+  template:
+    dest: /tmp/ansible_battleships_game_data.yml
+    src: ansible_battleships_game_data.yml.j2
+  when: (shots_fired is defined) or (ship_damage is defined) or (ship_sunk is defined)
+
+# - name: Pause
+#   pause:
+#     seconds: 15
+#   loop: "{{ shots | from_yaml }}"
+#   loop_control:
+#     loop_var: shot
+#     label: "Shot"
+#   when:
+#     - shot in ship.location
+#  - "'carrier' == ship.name"
 
 # - name: Battleship status report
 #   block:
@@ -126,14 +239,3 @@
 #     dest: battleship_game_stats.yml
 #     src: ../files/sitrep.j2
 
-- name: "{{ ship.name }}, status report?"
-  set_fact:
-    game_data:
-      shots:
-        fired: "{{ ansible_facts.battleships.game_data.shots.fired + shot }}"
-  when: shot not in ansible_facts.battleships.game_data.shots.fired
-  changed_when: shot not in ansible_facts.battleships.game_data.shots.fired
-  loop: "{{ shots | from_yaml }}"
-  loop_control:
-    loop_var: shot
-  no_log: True

@@ -7,7 +7,7 @@
 - name: Check that ships variables are defined
   fail:
     msg: "Ships must have a name, location and health defined"
-  when: ship.name is not defined or ship.location is not defined or ship.health is not defined
+  when: ship.name is not defined or ship.location is not defined
   loop: "{{ ships }}"
   loop_control:
     loop_var: ship

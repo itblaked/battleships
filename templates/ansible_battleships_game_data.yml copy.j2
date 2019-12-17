@@ -1,0 +1,64 @@
+---
+# {{ ansible_managed }}
+game_start_date: {{ now() }}
+{% if (battleships_new_game | bool or not battleships_game_data.stat.exists | bool) and (new_game_setup is not defined) %}
+battleships:
+  data_file:
+    shots:
+      fired: []
+    carrier:
+      damage: 0
+      health: 5
+      sunk: False
+{#    battleship: #}
+{#      damage: 0 #}
+{#      health: 4 #}
+{#      sunk: False #}
+{#    destroyer: #}
+{#      damage: 0 #}
+{#      health: 3 #}
+{#      sunk: False #}
+{#    submarine: #}
+{#      damage: 0 #}
+{#      health: 3 #}
+{#      sunk: False #}
+{#    patrolboat: #}
+{#      damage: 0 #}
+{#      health: 2 #}
+{#      sunk: False #}
+{#    spysub1: #}
+{#      enabled: False #}
+{#    spysub2: #}
+{#      enabled: False #}
+
+
+{% else %}
+battleships:
+  data_file:
+    shots:
+      fired: {{ shots_fired }}
+{% if ship.name == "carrier" %}    carrier:
+{% if ship.damage is defined %}      damage: {{ ship_damage }}{% endif %}
+      health: 5
+{% if ship_sunk is defined %}      sunk: {{ ship_sunk }}{% endif %}{% endif %}
+{#    battleship: #}
+{#      damage: {{ battleships.game_data.carrier.damage }} #}
+{#      health: 4 #}
+{#      sunk: {{ battleships.game_data.carrier.sunk | default(False)}} #}
+{#    destroyer: #}
+{#      damage: {{ battleships.game_data.carrier.damage }} #}
+{#      health: 3 #}
+{#      sunk: {{ battleships.game_data.carrier.sunk }} #}
+{#    submarine: #}
+{#      damage: {{ battleships.game_data.carrier.damage }} #}
+{#      health: 3 #}
+{#      sunk: {{ battleships.game_data.carrier.sunk }} #}
+{#    patrolboat: #}
+{#      damage: {{ battleships.game_data.carrier.damage }} #}
+{#      health: 2 #}
+{#      sunk: {{ battleships.game_data.carrier.sunk }} #}
+{#    spysub1: #}
+{#      enabled: False #}
+{#    spysub2: #}
+{#      enabled: False #}
+{% endif %}
